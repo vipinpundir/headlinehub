@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
 import NewsItem from './NewsItem';
 import Spinner from './spinner';
 
-
-
 const NewsApi = (category) => {
-    const cat = category.category
-    const [Data, SetData] = useState([])
-    const [Page, SetPage] = useState(1)
-    const [PageSize, SetPageSize] = useState()
+    const cat = category.category;
+    const [Data, SetData] = useState([]);
+    const [Page, SetPage] = useState(1);
+    const [PageSize, SetPageSize] = useState();
     const [isLoading, setIsLoading] = useState(true);
 
-
-
-    async function GetData() {
+    const getData = useCallback(async () => {
         setIsLoading(true);
-        // this is first API
-        // const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=c81fbd0151784f82a4817712573c6def&page=${Page}`);
-        // this is Second API
         const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${cat}&apiKey=f1f844df814749d79d5fe41e567cacd4&page=${Page}`);
-        const Data = await response.json()
-        SetData(Data.articles)
-        console.log(Data)
-        SetPageSize((Data.totalResults) / 20)
+        const data = await response.json();
+        SetData(data.articles);
+        console.log(data);
+        SetPageSize(data.totalResults / 20);
         setIsLoading(false);
-
-    }
+    }, [cat, Page]);
 
     useEffect(() => {
-        GetData()
-    }, []);
+        getData();
+    }, [getData]);
 
     async function PreHandel() {
         if (Page > 1) {
